@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DafzlSim - Relationship Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #1B172B;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            max-width: 900px;
+            padding: 20px;
+        }
+        .logo {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+        .logo span {
+            color: #15b3ab;
+        }
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 50px;
+            font-size: 18px;
+        }
+        .selection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .card {
+            background: #262626;
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: white;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card:hover {
+            border-color: #15b3ab;
+            transform: translateY(-10px);
+            background: #2d2d2d;
+            box-shadow: 0 10px 30px rgba(21, 179, 171, 0.2);
+        }
+        .icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #15b3ab;
+        }
+        .card p {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.6;
+        }
+        @media (max-width: 768px) {
+            .selection-grid {
+                grid-template-columns: 1fr;
+            }
+            .logo {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">Dafzl<span>Sim.</span></div>
+    <p class="subtitle">Choose your simulation type to begin</p>
+
+    <div class="selection-grid">
+        <a href="sub_html/friendship.html" class="card">
+            <div class="icon">🤝</div>
+            <h2>Friendship Dynamics</h2>
+            <p>Analyze interest alignment, proximity, and decay. Best for long-term platonic stability and "Toxic Gap" detection.</p>
+        </a>
+
+        <a href="sub_html/crush.html" class="card">
+            <div class="icon">❤️</div>
+            <h2>Love Simulator</h2>
+            <p>Predict the path of attraction using feeling scales. See if your connection will grow or fade over time.</p>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality Relationship Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* --- INTEGRATED CSS --- */
+        * {
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            color: #fff;
+            background: #1B172B;
+            line-height: 1.5;
+        }
+        .container {
+            padding: 10px 10%;
+        }
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 35px;
+            margin-bottom: 50px;
+        }
+        .logo {
+            font-size: 30px;
+            font-weight: 900;
+            color: white;
+        }
+        .logo span {
+            color: #15b3ab;
+        }
+        .header-text h1 {
+            font-size: 53px;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+        .header-text h1 span {
+            color: #15b3ab;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        .input-col {
+            flex-basis: 40%;
+            background: #262626;
+            padding: 40px;
+            border-radius: 15px;
+        }
+        .chart-col {
+            flex-basis: 55%;
+            background: #262626;
+            padding: 20px;
+            border-radius: 15px;
+            min-height: 450px;
+        }
+        input {
+            width: 100%;
+            border: 0;
+            outline: none;
+            background: #353b48;
+            padding: 15px;
+            margin: 10px 0 20px 0;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 6px;
+        }
+        label {
+            font-weight: 500;
+            color: #eee;
+        }
+        .butn {
+            display: inline-block;
+            background: #15b3ab;
+            border: 1px solid #15b3ab;
+            padding: 14px 50px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #fff;
+            transition: 0.5s;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            text-align: center;
+        }
+        .butn:hover {
+            background: transparent;
+            color: #15b3ab;
+        }
+        #sending-msg {
+            display: none;
+            color: #15b3ab;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        #result-text {
+            margin-top: 20px;
+            padding: 15px;
+            border-left: 4px solid #15b3ab;
+            background: #1B172B;
+            display: none;
+        }
+        @media only screen and (max-width: 1100px) {
+            .input-col, .chart-col { flex-basis: 100%; margin-bottom: 20px; }
+            .header-text h1 { font-size: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <nav>
+        <div class="logo">Dafzl<span>Sim.</span></div>
+    </nav>
+
+    <div class="header-text">
+        <h1>Relationship <span>Dynamics</span></h1>
+        <p>Enter details to simulate the path of your relationship based on attraction and decay logic.</p>
+        <p>Try to make around 2-4 simulations for better accuracy</p>
+    </div>
+
+    <div class="row">
+        <div class="input-col">
+            <label>Your Name</label>
+            <input type="text" id="userName" placeholder="Name">
+            
+            <label>Crush's/ Friends/ Partners Name</label>
+            <input type="text" id="crushName" placeholder="Crush Name">
+
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Your feelings (-15 / 15)</label>
+                    <input type="number" id="startX" value="3" step="0.5">
+                </div>
+                <div style="flex: 1;">
+                    <label>Subjects feelings (-15 / 15)</label>
+                    <input type="number" id="startY" value="3" step="0.5">
+                </div>
+            </div>
+
+            <button class="butn" onclick="simulate()">Simulate Path</button>
+            <p id="sending-msg">Simulating</p>
+
+            <div id="result-text">
+                <h3 style="color: #15b3ab;">Result</h3>
+                <p id="resDesc"></p>
+            </div>
+        </div>
+
+        <div class="chart-col">
+            <canvas id="dynamicsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    let myChart = null;
+    // Replace with your Google Apps Script Web App URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbys1T4rzCMqcsAQCL165R7nSY9bEmvrLd_Ronom5RVs3CYWtUqRSvYS3iIkeW4ehKaf/exec';
+
+    function calculateChanges(x, y) {
+        if ((x >= 10 && y < -3) || (y >= 10 && x < -3)) return [-10, -10];
+        if ((x >= 10 && (y >= -3 && y < 3)) || (y >= 10 && (x >= -3 && x < 3))) return [-5, -5];
+        if ((x >= 10 && (y >= 3 && y < 10)) || (y >= 10 && (x >= 5 && x < 10))) return [0, 0];
+        if ((x >= 3 && x < 10 && y < -3) || (y >= 3 && y < 10 && x < -3)) return [-10, -10];
+        if ((x >= 3 && x < 10 && (y >= 0 && y < 3)) || (y >= 3 && y < 10 && (x >= 0 && x < 3))) return [3, 3];
+        if (x >= 6 && x < 10 && y >= 6 && y < 10) return [10, 10];
+        if (x >= 3 && x < 6 && y >= 3 && y < 6) return [5, 5];
+        if (x >= -3 && x < 3 && y >= -3 && y < 3) return [0, 0];
+        if ((x >= -3 && x < 3 && y < -3) || (y >= -3 && y < 3 && x < -3)) return [-10, -10];
+        if (x < -3 && y < -3) return [-10, -10];
+        return [-2, -2];
+    }
+
+    async function simulate() {
+        const userName = document.getElementById('userName').value || "User";
+        const crushName = document.getElementById('crushName').value || "Crush";
+        const sX = parseFloat(document.getElementById('startX').value);
+        const sY = parseFloat(document.getElementById('startY').value);
+        const sendingMsg = document.getElementById('sending-msg');
+
+        let x = sX, y = sY;
+        let path = [{x, y}];
+        const steps = 100, dt = 0.1;
+
+        for (let i = 0; i < steps; i++) {
+            let [dx_target, dy_target] = calculateChanges(x, y);
+            x += (dx_target - x) * dt + (Math.random() - 0.5) * 0.2;
+            y += (dy_target - y) * dt + (Math.random() - 0.5) * 0.2;
+            path.push({x, y});
+        }
+
+        const endPoint = path[path.length - 1];
+        
+        // Send Data to Spreadsheet
+        sendingMsg.style.display = 'block';
+        sendingMsg.innerText = 'Simulating';
+        
+        const formData = new FormData();
+        formData.append('name', userName);
+        formData.append('crush', crushName);
+        formData.append('startX', sX);
+        formData.append('startY', sY);
+        formData.append('endX', endPoint.x.toFixed(2));
+        formData.append('endY', endPoint.y.toFixed(2));
+
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+            sendingMsg.innerText = 'Successfully Simulated';
+        } catch (error) {
+            sendingMsg.innerText = 'Error sending data.';
+        }
+
+        updateChart(path, userName, crushName);
+        
+        document.getElementById('result-text').style.display = 'block';
+        document.getElementById('resDesc').innerText = `Simulation finished. End coordinates: (${endPoint.x.toFixed(2)}, ${endPoint.y.toFixed(2)})`;
+
+    }
+
+    function updateChart(pathData, uName, cName) {
+        const ctx = document.getElementById('dynamicsChart').getContext('2d');
+        if (myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Relationship Path',
+                    data: pathData,
+                    showLine: true,
+                    borderColor: '#15b3ab',
+                    borderWidth: 3,
+                    pointRadius: (ctx) => ctx.dataIndex === pathData.length - 1 ? 8 : 0,
+                    pointBackgroundColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: uName, color: '#fff' }, min: -15, max: 15, grid: {color: '#444'}, ticks: {color: '#ccc'} },
+                    y: { title: { display: true, text: cName, color: '#fff' }, min: -15, max: 15, grid: {color: '#444'}, ticks: {color: '#ccc'} }
+                },
+                plugins: { legend: { labels: { color: '#fff' } } }
+            }
+        });
+    }
+
+    window.onload = () => updateChart([{x:0, y:0}], "User", "Crush");
+</script>
+</body>
+</html>
